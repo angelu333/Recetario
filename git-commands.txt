@@ -1,0 +1,42 @@
+# Comandos para subir el proyecto a Git
+
+# 1. Inicializar repositorio Git (si no está inicializado)
+git init
+
+# 2. Agregar todos los archivos
+git add .
+
+# 3. Hacer el primer commit
+git commit -m "🚀 Initial commit: API Recetario completa
+
+✅ Endpoints implementados:
+- CRUD completo de recetas
+- CRUD completo de usuarios  
+- Búsqueda avanzada con filtros
+- Sistema de valoraciones y comentarios
+- Favoritos de usuarios
+- Categorías e ingredientes
+- Estadísticas del sistema
+
+✅ Características:
+- Filtros por nombre (categorías e ingredientes)
+- Búsqueda intuitiva y flexible
+- Documentación completa (Postman + Swagger)
+- Base de datos MySQL con datos de ejemplo
+- Arquitectura REST limpia
+
+📁 Archivos incluidos:
+- API completa (index.php)
+- Scripts de BD (crear_tablas.sql)
+- Documentación (README.md, test_api.md)
+- Configuración Swagger (swagger.yaml, swagger.html)
+- Guía de setup (SETUP.md)"
+
+# 4. Conectar con repositorio remoto (reemplaza con tu URL)
+git remote add origin https://github.com/tu-usuario/recetario-api.git
+
+# 5. Subir al repositorio
+git push -u origin main
+
+# ó si tu rama principal es master:
+# git push -u origin master

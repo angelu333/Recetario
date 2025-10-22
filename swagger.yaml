@@ -1,0 +1,684 @@
+openapi: 3.0.0
+info:
+  title: API Recetario - Estilo Nestlé
+  description: |
+    Una API REST completa para un sistema de recetas tipo Nestlé.
+    
+    ## Características principales:
+    - CRUD completo para recetas, usuarios, categorías
+    - Búsqueda avanzada con múltiples filtros
+    - Sistema de valoraciones y comentarios
+    - Favoritos de usuarios
+    - Filtros intuitivos por nombre
+    
+  version: 1.0.0
+  contact:
+    name: Equipo Recetario
+    email: contacto@recetario.com
+
+servers:
+  - url: http://localhost/recetario_api
+    description: Servidor de desarrollo local
+
+paths:
+  # RECETAS
+  /recetas:
+    get:
+      tags:
+        - Recetas
+      summary: Obtener todas las recetas
+      description: Lista todas las recetas con información básica
+      responses:
+        '200':
+          description: Lista de recetas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RecetaResumen'
+    
+    post:
+      tags:
+        - Recetas
+      summary: Crear nueva receta
+      description: Crea una nueva receta con ingredientes, pasos, categorías y utensilios
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecetaCrear'
+      responses:
+        '201':
+          description: Receta creada exitosamente
+        '400':
+          description: Datos inválidos
+        '500':
+          description: Error interno del servidor
+
+  /recetas/{id}:
+    get:
+      tags:
+        - Recetas
+      summary: Obtener receta específica
+      description: Obtiene una receta completa con todos sus detalles
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Receta encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecetaCompleta'
+        '404':
+          description: Receta no encontrada
+    
+    put:
+      tags:
+        - Recetas
+      summary: Actualizar receta
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecetaActualizar'
+      responses:
+        '200':
+          description: Receta actualizada
+        '404':
+          description: Receta no encontrada
+    
+    delete:
+      tags:
+        - Recetas
+      summary: Eliminar receta
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Receta eliminada
+        '404':
+          description: Receta no encontrada
+
+  /recetas/destacadas:
+    get:
+      tags:
+        - Recetas
+      summary: Recetas destacadas
+      description: Obtiene las recetas con más favoritos
+      responses:
+        '200':
+          description: Lista de recetas destacadas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RecetaResumen'
+
+  /recetas/populares:
+    get:
+      tags:
+        - Recetas
+      summary: Recetas populares
+      description: Obtiene las recetas mejor valoradas
+      responses:
+        '200':
+          description: Lista de recetas populares
+
+  /recetas/recientes:
+    get:
+      tags:
+        - Recetas
+      summary: Recetas recientes
+      description: Obtiene las recetas más recientes
+      responses:
+        '200':
+          description: Lista de recetas recientes
+
+  # BÚSQUEDA
+  /buscar:
+    get:
+      tags:
+        - Búsqueda
+      summary: Búsqueda avanzada de recetas
+      description: |
+        Busca recetas usando múltiples filtros:
+        - Término de búsqueda en nombre y descripción
+        - Categoría por nombre (ej: "Postres", "Desayunos")
+        - Dificultad (Baja, Media, Alta)
+        - Tiempo máximo de preparación
+        - Ingredientes por nombre (separados por comas)
+      parameters:
+        - name: q
+          in: query
+          description: Término de búsqueda
+          schema:
+            type: string
+            example: "chocolate"
+        - name: categoria
+          in: query
+          description: Nombre de la categoría
+          schema:
+            type: string
+            example: "Postres"
+        - name: dificultad
+          in: query
+          description: Nivel de dificultad
+          schema:
+            type: string
+            enum: [Baja, Media, Alta]
+        - name: tiempo_max
+          in: query
+          description: Tiempo máximo en minutos
+          schema:
+            type: integer
+            example: 30
+        - name: ingredientes
+          in: query
+          description: Ingredientes separados por comas
+          schema:
+            type: string
+            example: "harina,huevo,leche"
+      responses:
+        '200':
+          description: Resultados de búsqueda
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RecetaResumen'
+
+  # USUARIOS
+  /usuarios:
+    get:
+      tags:
+        - Usuarios
+      summary: Obtener todos los usuarios
+      responses:
+        '200':
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UsuarioResumen'
+    
+    post:
+      tags:
+        - Usuarios
+      summary: Crear nuevo usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioCrear'
+      responses:
+        '201':
+          description: Usuario creado
+        '409':
+          description: Usuario o email ya existe
+
+  /usuarios/{id}:
+    get:
+      tags:
+        - Usuarios
+      summary: Obtener perfil de usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Perfil de usuario
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsuarioCompleto'
+    
+    put:
+      tags:
+        - Usuarios
+      summary: Actualizar usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioActualizar'
+      responses:
+        '200':
+          description: Usuario actualizado
+    
+    delete:
+      tags:
+        - Usuarios
+      summary: Eliminar usuario
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Usuario eliminado
+        '409':
+          description: Usuario tiene recetas asociadas
+
+  # CATEGORÍAS
+  /categorias:
+    get:
+      tags:
+        - Categorías
+      summary: Obtener todas las categorías
+      responses:
+        '200':
+          description: Lista de categorías
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Categoria'
+
+  /categorias/{nombre}:
+    get:
+      tags:
+        - Categorías
+      summary: Obtener recetas de una categoría
+      parameters:
+        - name: nombre
+          in: path
+          required: true
+          description: Nombre de la categoría o ID
+          schema:
+            type: string
+            example: "Postres"
+      responses:
+        '200':
+          description: Recetas de la categoría
+
+  # INGREDIENTES
+  /ingredientes:
+    get:
+      tags:
+        - Ingredientes
+      summary: Obtener todos los ingredientes
+      parameters:
+        - name: q
+          in: query
+          description: Buscar ingredientes por nombre
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de ingredientes
+
+  # VALORACIONES
+  /valoraciones/{receta_id}:
+    get:
+      tags:
+        - Valoraciones
+      summary: Obtener valoraciones de una receta
+      parameters:
+        - name: receta_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Valoraciones y estadísticas
+
+  /valoraciones:
+    post:
+      tags:
+        - Valoraciones
+      summary: Crear o actualizar valoración
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValoracionCrear'
+      responses:
+        '201':
+          description: Valoración creada/actualizada
+
+  # FAVORITOS
+  /favoritos/{usuario_id}:
+    get:
+      tags:
+        - Favoritos
+      summary: Obtener favoritos de un usuario
+      parameters:
+        - name: usuario_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Lista de recetas favoritas
+
+  /favoritos:
+    post:
+      tags:
+        - Favoritos
+      summary: Agregar a favoritos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                usuario_id:
+                  type: integer
+                receta_id:
+                  type: integer
+      responses:
+        '200':
+          description: Agregado a favoritos
+
+  # ESTADÍSTICAS
+  /stats:
+    get:
+      tags:
+        - Estadísticas
+      summary: Obtener estadísticas generales
+      responses:
+        '200':
+          description: Estadísticas del sistema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Estadisticas'
+
+components:
+  schemas:
+    RecetaResumen:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre:
+          type: string
+        descripcion:
+          type: string
+        imagen_url:
+          type: string
+        dificultad:
+          type: string
+          enum: [Baja, Media, Alta]
+        tiempo_preparacion:
+          type: integer
+        favoritos_count:
+          type: integer
+        autor:
+          type: string
+        rating_promedio:
+          type: number
+          format: float
+
+    RecetaCompleta:
+      allOf:
+        - $ref: '#/components/schemas/RecetaResumen'
+        - type: object
+          properties:
+            porciones:
+              type: integer
+            tiempo_coccion:
+              type: integer
+            ingredientes:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  nombre:
+                    type: string
+                  cantidad:
+                    type: string
+            pasos:
+              type: array
+              items:
+                type: object
+                properties:
+                  numero_paso:
+                    type: integer
+                  descripcion_paso:
+                    type: string
+            categorias:
+              type: array
+              items:
+                $ref: '#/components/schemas/Categoria'
+            utensilios:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  nombre:
+                    type: string
+
+    RecetaCrear:
+      type: object
+      required:
+        - nombre
+        - autor_id
+      properties:
+        nombre:
+          type: string
+        descripcion:
+          type: string
+        imagen_url:
+          type: string
+        porciones:
+          type: integer
+        tiempo_preparacion:
+          type: integer
+        tiempo_coccion:
+          type: integer
+        dificultad:
+          type: string
+          enum: [Baja, Media, Alta]
+        autor_id:
+          type: integer
+        ingredientes:
+          type: array
+          items:
+            type: object
+            properties:
+              nombre:
+                type: string
+              cantidad:
+                type: string
+        pasos:
+          type: array
+          items:
+            type: object
+            properties:
+              descripcion:
+                type: string
+        categorias:
+          type: array
+          items:
+            type: string
+        utensilios:
+          type: array
+          items:
+            type: string
+
+    RecetaActualizar:
+      type: object
+      properties:
+        nombre:
+          type: string
+        descripcion:
+          type: string
+        imagen_url:
+          type: string
+        porciones:
+          type: integer
+        tiempo_preparacion:
+          type: integer
+        tiempo_coccion:
+          type: integer
+        dificultad:
+          type: string
+          enum: [Baja, Media, Alta]
+
+    UsuarioResumen:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre_usuario:
+          type: string
+        nombre_completo:
+          type: string
+        email:
+          type: string
+        fecha_registro:
+          type: string
+          format: date-time
+        total_recetas:
+          type: integer
+
+    UsuarioCompleto:
+      allOf:
+        - $ref: '#/components/schemas/UsuarioResumen'
+        - type: object
+          properties:
+            rating_promedio:
+              type: number
+            recetas:
+              type: array
+              items:
+                $ref: '#/components/schemas/RecetaResumen'
+
+    UsuarioCrear:
+      type: object
+      required:
+        - nombre_usuario
+        - email
+      properties:
+        nombre_usuario:
+          type: string
+        email:
+          type: string
+          format: email
+        nombre_completo:
+          type: string
+
+    UsuarioActualizar:
+      type: object
+      properties:
+        nombre_usuario:
+          type: string
+        email:
+          type: string
+          format: email
+        nombre_completo:
+          type: string
+
+    Categoria:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre:
+          type: string
+        total_recetas:
+          type: integer
+
+    ValoracionCrear:
+      type: object
+      required:
+        - receta_id
+        - usuario_id
+        - puntuacion
+      properties:
+        receta_id:
+          type: integer
+        usuario_id:
+          type: integer
+        puntuacion:
+          type: integer
+          minimum: 1
+          maximum: 5
+        comentario:
+          type: string
+
+    Estadisticas:
+      type: object
+      properties:
+        total_recetas:
+          type: integer
+        total_usuarios:
+          type: integer
+        total_categorias:
+          type: integer
+        total_ingredientes:
+          type: integer
+        recetas_populares:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              nombre:
+                type: string
+              favoritos_count:
+                type: integer
+
+tags:
+  - name: Recetas
+    description: Operaciones con recetas
+  - name: Búsqueda
+    description: Búsqueda y filtrado de recetas
+  - name: Usuarios
+    description: Gestión de usuarios
+  - name: Categorías
+    description: Categorías de recetas
+  - name: Ingredientes
+    description: Ingredientes disponibles
+  - name: Valoraciones
+    description: Sistema de valoraciones
+  - name: Favoritos
+    description: Recetas favoritas
+  - name: Estadísticas
+    description: Estadísticas del sistema
