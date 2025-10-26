@@ -58,10 +58,44 @@ cp db_config.example.php db_config.php
 # Editar db_config.php con tus credenciales
 ```
 
-### 3. Configurar servidor web
-- Apuntar el servidor web a la carpeta del proyecto
+### 3. Configurar servidor web (rápido, usando PHP built-in)
 - Asegurar que PHP tenga extensión PDO MySQL habilitada
-- URL base: `http://localhost/recetario_api`
+- Usar el servidor integrado de PHP para desarrollo local
+
+En PowerShell, desde la raíz del proyecto ejecuta:
+```powershell
+# Levantar servidor PHP en el puerto 8000 y usar router.php para servir archivos
+php -S localhost:8000 router.php
+```
+
+Luego abre en el navegador:
+
+- API base: `http://localhost:8000/recetario_api/index.php`
+- Swagger UI: `http://localhost:8000/recetario_api/swagger.html`
+
+Si prefieres usar Apache/Nginx o Docker, apunta el DocumentRoot a la carpeta del proyecto y configura la URL base como `/recetario_api`.
+
+### 4. Configurar con XAMPP (opción recomendada si ya tenés XAMPP)
+
+1. Copiá el proyecto a la carpeta `htdocs` de XAMPP (puedes usar el script incluido `start-xampp-dev.ps1`):
+
+```powershell
+# Abrir PowerShell como administrador en la carpeta del proyecto
+.\start-xampp-dev.ps1
+```
+
+2. Abrí el XAMPP Control Panel y arrancá Apache y MySQL.
+
+3. Importá la base de datos usando phpMyAdmin (http://localhost/phpmyadmin):
+
+	- Ir a Importar -> elegir `crear_tablas.sql` -> Ejecutar.
+
+4. Accedé a la API y Swagger:
+
+	- Swagger UI: http://localhost/recetario_api/swagger.html
+	- API base: http://localhost/recetario_api/index.php
+
+5. Si necesitás cambiar credenciales de la DB, edita `db_config.php` en la carpeta del proyecto (por ejemplo `C:\xampp\htdocs\recetario_api\db_config.php`).
 
 ## 📖 Documentación
 

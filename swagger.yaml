@@ -17,8 +17,10 @@ info:
     email: contacto@recetario.com
 
 servers:
+  - url: http://localhost:8000/recetario_api
+    description: Servidor de desarrollo local (PHP built-in en puerto 8000)
   - url: http://localhost/recetario_api
-    description: Servidor de desarrollo local
+    description: Servidor local via Apache/XAMPP (DocumentRoot apuntando al proyecto)
 
 paths:
   # RECETAS
