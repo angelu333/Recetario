@@ -1,3 +1,25 @@
+# Ignorar configuración local y archivos sensibles
+db_config.php
+
+# Archivos y helpers de desarrollo
+api-test-results.json
+postman_collection_recetario.json
+test-db.php
+start-xampp-dev.ps1
+router.php
+
+# OS / editor
+.vscode/
+Thumbs.db
+ehthumbs.db
+*.log
+
+# Dependency folders (if any)
+node_modules/
+
+# SQLite or DB files
+*.sqlite
+*.db
 # Archivos de configuración sensibles
 db_config.php
 
